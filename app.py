@@ -37,7 +37,7 @@ st.markdown("""
 }
 
 
-/* HEADER */
+/* ================= HEADER ================= */
 
 .title {
     text-align: center;
@@ -56,7 +56,7 @@ st.markdown("""
 }
 
 
-/* SCANNER */
+/* ================= SCANNER ================= */
 
 .scanner {
     background: #101620;
@@ -67,7 +67,7 @@ st.markdown("""
 }
 
 
-/* INPUT */
+/* ================= URL INPUT ================= */
 
 .stTextInput > div > div > input {
     background: #080d15 !important;
@@ -84,7 +84,7 @@ st.markdown("""
 }
 
 
-/* BUTTON */
+/* ================= BUTTON ================= */
 
 .stButton > button {
     width: 100%;
@@ -103,117 +103,7 @@ st.markdown("""
 }
 
 
-/* =========================================================
-   MAIN RESULT BANNER
-   ========================================================= */
-
-.result-banner {
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 22px;
-    padding: 45px 25px;
-    text-align: center;
-    margin-top: 25px;
-    margin-bottom: 20px;
-}
-
-
-/* MALICIOUS */
-
-.malicious-banner {
-    background: linear-gradient(
-        135deg,
-        #3b0a12 0%,
-        #7f1624 50%,
-        #4a0c15 100%
-    );
-
-    border: 1px solid #ef4444;
-
-    box-shadow:
-        0 0 35px rgba(239, 68, 68, 0.18);
-}
-
-
-/* LEGITIMATE */
-
-.safe-banner {
-    background: linear-gradient(
-        135deg,
-        #06351f 0%,
-        #087443 50%,
-        #06452b 100%
-    );
-
-    border: 1px solid #22c55e;
-
-    box-shadow:
-        0 0 35px rgba(34, 197, 94, 0.18);
-}
-
-
-/* RESULT TITLE */
-
-.result-title {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    color: white;
-    margin-bottom: 15px;
-}
-
-
-/* BIG PROBABILITY */
-
-.big-probability {
-    font-size: 64px;
-    font-weight: 900;
-    color: white;
-    line-height: 1;
-    margin: 10px 0;
-    letter-spacing: -2px;
-}
-
-
-/* PROBABILITY LABEL */
-
-.probability-label {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,0.75);
-    text-transform: uppercase;
-}
-
-
-/* RISK */
-
-.risk {
-    display: inline-block;
-    margin-top: 22px;
-    padding: 8px 22px;
-    border-radius: 30px;
-    background: rgba(0,0,0,0.25);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-}
-
-
-/* DESCRIPTION */
-
-.result-description {
-    color: rgba(255,255,255,0.75);
-    font-size: 13px;
-    margin-top: 18px;
-}
-
-
-/* =========================================================
-   METRICS
-   ========================================================= */
+/* ================= METRIC CARDS ================= */
 
 .metrics {
     display: flex;
@@ -244,9 +134,7 @@ st.markdown("""
 }
 
 
-/* =========================================================
-   URL CARD
-   ========================================================= */
+/* ================= URL CARD ================= */
 
 .url-card {
     background: #0c1119;
@@ -272,7 +160,7 @@ st.markdown("""
 }
 
 
-/* FOOTER */
+/* ================= FOOTER ================= */
 
 .footer {
     text-align: center;
@@ -282,20 +170,12 @@ st.markdown("""
 }
 
 
-/* MOBILE */
+/* ================= MOBILE ================= */
 
 @media (max-width: 600px) {
 
     .title {
         font-size: 42px;
-    }
-
-    .big-probability {
-        font-size: 52px;
-    }
-
-    .result-title {
-        font-size: 27px;
     }
 
     .metrics {
@@ -347,9 +227,14 @@ def extract_url_features(url):
     url = str(url).strip()
 
     if re.match(r"^[a-zA-Z]+://", url):
+
         parsed_url = urlparse(url)
+
     else:
-        parsed_url = urlparse("http://" + url)
+
+        parsed_url = urlparse(
+            "http://" + url
+        )
 
     domain = parsed_url.netloc
     path = parsed_url.path
@@ -359,38 +244,80 @@ def extract_url_features(url):
 
     features = {}
 
+    # -------------------------------
+    # URL LENGTH
+    # -------------------------------
+
     features["URLLength"] = len(url)
-    features["DomainLength"] = len(domain_without_port)
+
+    features["DomainLength"] = len(
+        domain_without_port
+    )
+
     features["PathLength"] = len(path)
+
     features["QueryLength"] = len(query)
 
+
+    # -------------------------------
+    # SPECIAL CHARACTERS
+    # -------------------------------
+
     features["NumDots"] = url.count(".")
+
     features["NumHyphens"] = url.count("-")
+
     features["NumUnderscores"] = url.count("_")
+
     features["NumSlashes"] = url.count("/")
+
     features["NumQuestionMarks"] = url.count("?")
+
     features["NumEqual"] = url.count("=")
+
     features["NumAt"] = url.count("@")
+
     features["NumAmpersand"] = url.count("&")
+
     features["NumPercent"] = url.count("%")
 
+
+    # -------------------------------
+    # CHARACTER COUNTS
+    # -------------------------------
+
     features["NumDigits"] = sum(
-        c.isdigit() for c in url
+        character.isdigit()
+        for character in url
     )
 
     features["NumLetters"] = sum(
-        c.isalpha() for c in url
+        character.isalpha()
+        for character in url
     )
 
     features["NumSpecialChars"] = sum(
-        not c.isalnum() for c in url
+        not character.isalnum()
+        for character in url
     )
+
+
+    # -------------------------------
+    # HTTPS
+    # -------------------------------
 
     features["IsHTTPS"] = int(
         parsed_url.scheme.lower() == "https"
     )
 
-    ipv4_pattern = r"^(?:\d{1,3}\.){3}\d{1,3}$"
+
+    # -------------------------------
+    # IP ADDRESS
+    # -------------------------------
+
+    ipv4_pattern = (
+        r"^(?:\d{1,3}\.){3}\d{1,3}$"
+    )
 
     features["IsDomainIP"] = int(
         bool(
@@ -400,6 +327,11 @@ def extract_url_features(url):
             )
         )
     )
+
+
+    # -------------------------------
+    # SUBDOMAIN
+    # -------------------------------
 
     domain_parts = [
         part
@@ -412,11 +344,22 @@ def extract_url_features(url):
         0
     )
 
+
+    # -------------------------------
+    # DOUBLE SLASH
+    # -------------------------------
+
     features["HasDoubleSlash"] = int(
         "//" in url[8:]
     )
 
+
+    # -------------------------------
+    # SUSPICIOUS WORDS
+    # -------------------------------
+
     suspicious_words = [
+
         "login",
         "signin",
         "verify",
@@ -440,16 +383,27 @@ def extract_url_features(url):
         "free",
         "claim",
         "urgent"
+
     ]
 
     url_lower = url.lower()
 
     features["SuspiciousWordCount"] = sum(
+
         word in url_lower
-        for word in suspicious_words
+
+        for word
+        in suspicious_words
+
     )
 
+
+    # -------------------------------
+    # SHORTENED URL
+    # -------------------------------
+
     shortening_domains = [
+
         "bit.ly",
         "tinyurl.com",
         "goo.gl",
@@ -459,52 +413,95 @@ def extract_url_features(url):
         "buff.ly",
         "rebrand.ly",
         "cutt.ly"
+
     ]
 
     features["IsShortenedURL"] = int(
+
         any(
-            domain_name in domain_without_port.lower()
-            for domain_name in shortening_domains
+
+            short_domain
+            in domain_without_port.lower()
+
+            for short_domain
+            in shortening_domains
+
         )
+
     )
+
+
+    # -------------------------------
+    # DOMAIN CHARACTERISTICS
+    # -------------------------------
 
     features["DomainHasHyphen"] = int(
         "-" in domain_without_port
     )
 
     features["DomainHasDigits"] = int(
+
         any(
-            c.isdigit()
-            for c in domain_without_port
+
+            character.isdigit()
+
+            for character
+            in domain_without_port
+
         )
+
     )
+
+
+    # -------------------------------
+    # QUERY PARAMETERS
+    # -------------------------------
 
     features["QueryParameterCount"] = (
+
         query.count("=")
+
         if query
+
         else 0
+
     )
 
-    # URL entropy
+
+    # -------------------------------
+    # URL ENTROPY
+    # -------------------------------
 
     if len(url) > 0:
 
         probabilities = [
-            url.count(c) / len(url)
-            for c in set(url)
+
+            url.count(character) / len(url)
+
+            for character
+            in set(url)
+
         ]
 
         entropy = -sum(
-            p * math.log2(p)
-            for p in probabilities
-            if p > 0
+
+            probability
+            * math.log2(probability)
+
+            for probability
+            in probabilities
+
+            if probability > 0
+
         )
 
     else:
 
         entropy = 0
 
+
     features["URLEntropy"] = entropy
+
 
     return features
 
@@ -552,7 +549,7 @@ st.markdown(
 
 
 # =========================================================
-# ANALYSIS
+# SCAN URL
 # =========================================================
 
 if scan:
@@ -565,84 +562,125 @@ if scan:
 
         st.stop()
 
+
     url = url_input.strip()
+
 
     try:
 
-        # Extract URL features
+        # =================================================
+        # FEATURE EXTRACTION
+        # =================================================
 
         features = extract_url_features(url)
 
-        # Check model requirements
 
-        missing = [
+        # =================================================
+        # CHECK MODEL FEATURES
+        # =================================================
+
+        missing_features = [
+
             column
-            for column in feature_columns
+
+            for column
+            in feature_columns
+
             if column not in features
+
         ]
 
-        if missing:
+
+        if missing_features:
 
             st.error(
-                "Some features required by the model "
-                "are missing."
+                "The model requires features that "
+                "are not available."
             )
 
-            st.code(str(missing))
+            st.code(
+                str(missing_features)
+            )
 
             st.stop()
 
-        # Exact feature order
+
+        # =================================================
+        # CREATE DATAFRAME
+        # =================================================
 
         feature_df = pd.DataFrame([
+
             {
                 column: features[column]
-                for column in feature_columns
+
+                for column
+                in feature_columns
             }
+
         ])
+
 
         feature_df = feature_df.astype(
             np.float32
         )
 
-        # Scale
+
+        # =================================================
+        # SCALE FEATURES
+        # =================================================
 
         scaled_features = scaler.transform(
             feature_df
         ).astype(np.float32)
 
-        # Prediction
+
+        # =================================================
+        # MODEL PREDICTION
+        # =================================================
 
         prediction = model.predict(
             scaled_features
         )[0]
 
+
         probabilities = model.predict_proba(
             scaled_features
         )[0]
 
-        # Get correct probability indexes
 
-        classes = list(model.classes_)
+        # =================================================
+        # GET CORRECT CLASS PROBABILITIES
+        # =================================================
+
+        classes = list(
+            model.classes_
+        )
+
 
         phishing_index = classes.index(0)
+
         legitimate_index = classes.index(1)
+
 
         phishing_probability = (
             probabilities[phishing_index] * 100
         )
 
+
         legitimate_probability = (
             probabilities[legitimate_index] * 100
         )
+
 
         confidence = max(
             phishing_probability,
             legitimate_probability
         )
 
+
         # =================================================
-        # RESULT
+        # RESULT INFORMATION
         # =================================================
 
         if prediction == 0:
@@ -654,12 +692,21 @@ if scan:
             risk = "HIGH RISK"
 
             description = (
-                "This URL has characteristics associated "
-                "with phishing activity. Avoid entering "
-                "personal or sensitive information."
+                "This URL shows characteristics "
+                "associated with phishing activity. "
+                "Avoid entering personal or sensitive "
+                "information."
             )
 
-            banner = "malicious-banner"
+            background = (
+                "linear-gradient("
+                "135deg, #450a0a, #991b1b, #450a0a)"
+            )
+
+            border = "#ef4444"
+
+            accent = "#fca5a5"
+
 
         else:
 
@@ -671,118 +718,271 @@ if scan:
 
             description = (
                 "This URL does not show strong phishing "
-                "characteristics based on the trained model."
+                "characteristics based on the trained "
+                "machine learning model."
             )
 
-            banner = "safe-banner"
+            background = (
+                "linear-gradient("
+                "135deg, #052e16, #15803d, #052e16)"
+            )
+
+            border = "#22c55e"
+
+            accent = "#86efac"
 
 
         # =================================================
-        # BIG FULL-COLOR RESULT BANNER
+        # FULL COLOR RESULT BANNER
         # =================================================
 
-        st.markdown(
-            f"""
-            <div class="result-banner {banner}">
+        st.html(f"""
 
-                <div class="result-title">
-                    {result_title}
-                </div>
+        <div style="
+            width:100%;
+            box-sizing:border-box;
 
-                <div class="big-probability">
-                    {probability:.2f}%
-                </div>
+            background:{background};
 
-                <div class="probability-label">
-                    Prediction Probability
-                </div>
+            border:2px solid {border};
 
-                <div class="risk">
-                    {risk}
-                </div>
+            border-radius:22px;
 
-                <div class="result-description">
-                    {description}
-                </div>
+            padding:45px 25px;
 
+            text-align:center;
+
+            margin:25px 0 20px 0;
+
+            font-family:Arial,sans-serif;
+
+            box-shadow:
+                0 10px 35px rgba(0,0,0,0.30);
+        ">
+
+            <div style="
+                color:white;
+                font-size:31px;
+                font-weight:800;
+                letter-spacing:1px;
+                margin-bottom:18px;
+            ">
+                {result_title}
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+
+
+            <div style="
+                color:white;
+                font-size:68px;
+                font-weight:900;
+                line-height:1;
+                margin:10px 0;
+            ">
+                {probability:.2f}%
+            </div>
+
+
+            <div style="
+                color:{accent};
+                font-size:12px;
+                font-weight:800;
+                letter-spacing:2px;
+                text-transform:uppercase;
+            ">
+                PREDICTION PROBABILITY
+            </div>
+
+
+            <div style="
+                display:inline-block;
+
+                margin-top:22px;
+
+                padding:9px 24px;
+
+                border-radius:30px;
+
+                background:rgba(0,0,0,0.28);
+
+                border:1px solid
+                rgba(255,255,255,0.25);
+
+                color:white;
+
+                font-size:12px;
+
+                font-weight:800;
+
+                letter-spacing:1.5px;
+            ">
+                {risk}
+            </div>
+
+
+            <div style="
+                color:rgba(255,255,255,0.78);
+
+                font-size:13px;
+
+                line-height:1.6;
+
+                max-width:600px;
+
+                margin:20px auto 0 auto;
+            ">
+                {description}
+            </div>
+
+        </div>
+
+        """)
 
 
         # =================================================
-        # METRICS
+        # MODEL METRICS
         # =================================================
 
         model_accuracy = 99.94
 
-        st.markdown(
-            f"""
-            <div class="metrics">
 
-                <div class="metric">
+        st.html(f"""
 
-                    <div class="metric-value">
-                        {model_accuracy:.2f}%
-                    </div>
+        <div style="
+            display:flex;
+            gap:15px;
+            width:100%;
+            margin-top:20px;
+            font-family:Arial,sans-serif;
+        ">
 
-                    <div class="metric-label">
-                        MODEL ACCURACY
-                    </div>
+            <div style="
+                flex:1;
+                background:#101620;
+                border:1px solid #202b3b;
+                border-radius:16px;
+                padding:22px 10px;
+                text-align:center;
+            ">
 
+                <div style="
+                    color:white;
+                    font-size:25px;
+                    font-weight:800;
+                ">
+                    {model_accuracy:.2f}%
                 </div>
 
-                <div class="metric">
-
-                    <div class="metric-value">
-                        {confidence:.2f}%
-                    </div>
-
-                    <div class="metric-label">
-                        CONFIDENCE
-                    </div>
-
-                </div>
-
-                <div class="metric">
-
-                    <div class="metric-value">
-                        {risk.replace(" RISK", "")}
-                    </div>
-
-                    <div class="metric-label">
-                        RISK LEVEL
-                    </div>
-
+                <div style="
+                    color:#7f8a9d;
+                    font-size:10px;
+                    margin-top:6px;
+                    letter-spacing:1px;
+                ">
+                    MODEL ACCURACY
                 </div>
 
             </div>
-            """,
-            unsafe_allow_html=True
-        )
 
 
-        # =================================================
-        # ANALYZED URL
-        # =================================================
+            <div style="
+                flex:1;
+                background:#101620;
+                border:1px solid #202b3b;
+                border-radius:16px;
+                padding:22px 10px;
+                text-align:center;
+            ">
 
-        st.markdown(
-            f"""
-            <div class="url-card">
-
-                <div class="url-heading">
-                    Analyzed URL
+                <div style="
+                    color:white;
+                    font-size:25px;
+                    font-weight:800;
+                ">
+                    {confidence:.2f}%
                 </div>
 
-                <div class="url-value">
-                    {url}
+                <div style="
+                    color:#7f8a9d;
+                    font-size:10px;
+                    margin-top:6px;
+                    letter-spacing:1px;
+                ">
+                    CONFIDENCE
                 </div>
 
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+
+
+            <div style="
+                flex:1;
+                background:#101620;
+                border:1px solid #202b3b;
+                border-radius:16px;
+                padding:22px 10px;
+                text-align:center;
+            ">
+
+                <div style="
+                    color:white;
+                    font-size:25px;
+                    font-weight:800;
+                ">
+                    {'HIGH' if prediction == 0 else 'LOW'}
+                </div>
+
+                <div style="
+                    color:#7f8a9d;
+                    font-size:10px;
+                    margin-top:6px;
+                    letter-spacing:1px;
+                ">
+                    RISK LEVEL
+                </div>
+
+            </div>
+
+        </div>
+
+        """)
+
+
+        # =================================================
+        # URL CARD
+        # =================================================
+
+        st.html(f"""
+
+        <div style="
+            background:#0c1119;
+            border:1px solid #202b3b;
+            border-radius:14px;
+            padding:18px;
+            margin-top:20px;
+            font-family:Arial,sans-serif;
+        ">
+
+            <div style="
+                color:#66748a;
+                font-size:10px;
+                font-weight:700;
+                letter-spacing:1.5px;
+                text-transform:uppercase;
+                margin-bottom:8px;
+            ">
+                ANALYZED URL
+            </div>
+
+            <div style="
+                color:#cbd5e1;
+                font-size:13px;
+                word-break:break-all;
+            ">
+                {url}
+            </div>
+
+        </div>
+
+        """)
 
 
     except Exception as e:
@@ -791,18 +991,25 @@ if scan:
             "Unable to analyze this URL."
         )
 
-        st.code(str(e))
+        st.code(
+            str(e)
+        )
 
 
 # =========================================================
 # FOOTER
 # =========================================================
 
-st.markdown(
-    """
-    <div class="footer">
-        PhishGuard • Machine Learning URL Security
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.html("""
+
+<div style="
+    text-align:center;
+    color:#475569;
+    font-size:11px;
+    margin-top:35px;
+    font-family:Arial,sans-serif;
+">
+    PhishGuard • Machine Learning URL Security
+</div>
+
+""")
